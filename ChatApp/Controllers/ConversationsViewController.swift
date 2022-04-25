@@ -12,7 +12,6 @@ class ConversationsViewController: UIViewController {  //controllerul principal,
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .red
         
     }
     

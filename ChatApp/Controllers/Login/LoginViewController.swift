@@ -7,9 +7,10 @@
 
 import UIKit
 import FirebaseAuth
+import FBSDKLoginKit
 
 class LoginViewController: UIViewController { //container pt pagina
-
+    
     private let scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.clipsToBounds = true
@@ -22,7 +23,7 @@ class LoginViewController: UIViewController { //container pt pagina
         imageView.image = UIImage(named: "logo")
         imageView.contentMode = .scaleAspectFit
         
-            return imageView
+        return imageView
     }()
     
     private let emailField: UITextField = {
@@ -76,6 +77,14 @@ class LoginViewController: UIViewController { //container pt pagina
         return button
     }()
     
+    private let facebookLoginButton: FBLoginButton = {
+        let button = FBLoginButton()
+        button.permissions = ["email", "public_profile"]
+        
+        return button
+    }()
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Log in"
@@ -89,12 +98,18 @@ class LoginViewController: UIViewController { //container pt pagina
         emailField.delegate = self
         passwordField.delegate = self
         
+        facebookLoginButton.delegate = self
+        
         //Add subviews (elementele de pe pagina)
         view.addSubview(scrollView)
         scrollView.addSubview(imageView)
         scrollView.addSubview(emailField)
         scrollView.addSubview(passwordField)
         scrollView.addSubview(loginButton)
+        scrollView.addSubview(facebookLoginButton)
+        
+        
+        
     }
     
     override func viewDidLayoutSubviews() {  //pozitionarea elementelor pe pagina
@@ -113,6 +128,9 @@ class LoginViewController: UIViewController { //container pt pagina
         
         loginButton.frame = CGRect( x: 30, y: passwordField.bottom+10,
                                     width: scrollView.width-60, height: 52)
+        
+        facebookLoginButton.frame = CGRect( x: 30, y: loginButton.bottom+10,
+                                            width: scrollView.width-60, height: 52)
     }
     
     @objc private func loginButtonTapped(){
@@ -122,8 +140,8 @@ class LoginViewController: UIViewController { //container pt pagina
         
         guard let email = emailField.text, let password = passwordField.text,
               !email.isEmpty, !password.isEmpty, password.count >= 6 else {
-                    alertUseroginError()
-                    return
+            alertUseroginError()
+            return
         }
         
         //Firebase LogIn
@@ -145,14 +163,14 @@ class LoginViewController: UIViewController { //container pt pagina
     func alertUseroginError(){   //error if info is not completed correctly - either not all the fields are completed or the password is too short
         guard let pass = passwordField.text, pass.isEmpty || pass.count >= 6 else {
             let alert = UIAlertController(title: "Hopa!", message: "The password must have at least 6 characters",
-                                         preferredStyle: .alert)
+                                          preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "Dismiss", style: .cancel, handler: nil))
             
             present(alert, animated: true)
             return
         }
         
-            let alert = UIAlertController(title: "Hopa!", message: "Please complete all information to log in",
+        let alert = UIAlertController(title: "Hopa!", message: "Please complete all information to log in",
                                       preferredStyle: .alert)
         
         alert.addAction(UIAlertAction(title: "Dismiss", style: .cancel, handler: nil))
@@ -165,8 +183,8 @@ class LoginViewController: UIViewController { //container pt pagina
         vc.title = "Create Account"
         navigationController?.pushViewController(vc, animated: true)
     }
-
-
+    
+    
 }
 
 extension LoginViewController: UITextFieldDelegate {
@@ -182,4 +200,69 @@ extension LoginViewController: UITextFieldDelegate {
         
         return true
     }
+}
+
+
+extension LoginViewController: LoginButtonDelegate {
+    func loginButtonDidLogOut(_ loginButton: FBLoginButton) {
+        //no operation here - nu afisam butonul de logIn in afara ecranului de logIn
+    }
+    
+    func loginButton(_ loginButton: FBLoginButton, didCompleteWith result: LoginManagerLoginResult?, error: Error?) {
+        guard let token = result?.token?.tokenString else {
+            print("User failed to log in with Facebook :(")
+            return
+        }
+        
+        let facebookRequest = FBSDKLoginKit.GraphRequest(graphPath: "me", parameters: ["fields": "email, name"],
+                                                         tokenString: token, version: nil, httpMethod: .get)
+        facebookRequest.start(completion: { _, result, error in
+            guard let result = result as? [String: Any], error == nil else {
+                print ("Failed to make Facebook graph request :(")
+                return
+            }
+            
+            guard let userName = result["name"] as? String,
+                  let email = result["email"] as? String else {
+                print ("Failed to  get email and name from Facebook result")
+                return
+            }
+            
+            let nameComponents = userName.components(separatedBy: " ")
+            guard nameComponents.count == 2 else {
+                return
+            }
+            
+            let firstName = nameComponents[0]
+            let lastName = nameComponents[1]
+            
+            DatabaseManager.shared.userExists(with: email, completion: { exists in
+                if !exists {
+                    DatabaseManager.shared.insertUser(with: ChatAppUser(firstName: firstName,
+                                                                        lastName: lastName, emailAddress: email))
+                }
+            })
+            
+            let credential = FacebookAuthProvider.credential(withAccessToken: token)
+            
+            FirebaseAuth.Auth.auth().signIn(with: credential, completion: { [weak self] authResult, error in
+                guard let strongSelf = self else {
+                    return
+                }
+                guard authResult != nil, error == nil else {
+                    print("Facebook credential login failed, MFA may be needed  :(")
+                    
+                    return
+                }
+                
+                print ("Successfully logged user in :)" )
+                strongSelf.navigationController?.dismiss(animated: true,  completion: nil)
+            })
+        })
+        
+        
+        
+    }
+    
+    
 }
