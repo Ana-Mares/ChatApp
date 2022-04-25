@@ -127,7 +127,10 @@ class LoginViewController: UIViewController { //container pt pagina
         }
         
         //Firebase LogIn
-        FirebaseAuth.Auth.auth().signIn(withEmail: email, password: password, completion: { authResult, error in
+        FirebaseAuth.Auth.auth().signIn(withEmail: email, password: password, completion: { [weak self] authResult, error in
+            guard let strongSelf = self else {
+                return
+            }
             guard let result = authResult, error == nil else {
                 print  ("Failed to log in user with email: \(email)  :(")
                 return
@@ -135,11 +138,21 @@ class LoginViewController: UIViewController { //container pt pagina
             
             let user = result.user
             print ("Logged in user: \(user)  :)")
+            strongSelf.navigationController?.dismiss(animated: true, completion: nil)
         })
     }
     
-    func alertUseroginError(){
-        let alert = UIAlertController(title: "Hopa!", message: "Please complete all information to log in",
+    func alertUseroginError(){   //error if info is not completed correctly - either not all the fields are completed or the password is too short
+        guard let pass = passwordField.text, pass.isEmpty || pass.count >= 6 else {
+            let alert = UIAlertController(title: "Hopa!", message: "The password must have at least 6 characters",
+                                         preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Dismiss", style: .cancel, handler: nil))
+            
+            present(alert, animated: true)
+            return
+        }
+        
+            let alert = UIAlertController(title: "Hopa!", message: "Please complete all information to log in",
                                       preferredStyle: .alert)
         
         alert.addAction(UIAlertAction(title: "Dismiss", style: .cancel, handler: nil))

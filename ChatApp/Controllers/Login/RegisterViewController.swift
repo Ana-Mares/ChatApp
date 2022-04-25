@@ -18,7 +18,7 @@ class RegisterViewController: UIViewController {
     
     private let imageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(systemName: "person")
+        imageView.image = UIImage(systemName: "person.circle")
         imageView.tintColor = .orange
         imageView.contentMode = .scaleAspectFit
         imageView.layer.masksToBounds = true
@@ -121,11 +121,11 @@ class RegisterViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Log in"
+        title = "Register"
         view.backgroundColor = .white
         
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Register", style: .done,
-                                                            target: self, action: #selector(didTapRegister))
+       // navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Register", style: .done,
+                                                       //     target: self, action: #selector(didTapLogIn))
         
         registerButton.addTarget(self, action: #selector(registerButtonTapped), for: .touchUpInside)
         
@@ -196,18 +196,44 @@ class RegisterViewController: UIViewController {
         
         //Firebase LogIn
         
-        FirebaseAuth.Auth.auth().createUser(withEmail: email, password: password, completion: { authResult, error in
-            guard let result = authResult, error == nil else {
-                print ("Error creating user :( ")
+        DatabaseManager.shared.userExists(with: email, completion: { [weak self] exists in
+            guard let strongSelf = self else {
+                
                 return
             }
-            let user = result.user
-            print("Created user: \(user) :)")
+            
+            guard !exists else {
+                //user already exists
+                strongSelf.alertUseroginError(message: "There is already a user account with this email.")
+                return
+            }
+            
+            FirebaseAuth.Auth.auth().createUser(withEmail: email, password: password, completion: { authResult, error in
+                guard authResult != nil, error == nil else {
+                    print ("Error creating user :( ")
+                    return
+                }
+                
+                DatabaseManager.shared.insertUser(with: ChatAppUser (firstName: firstName, lastName: lastName, emailAddress: email))
+                
+                strongSelf.navigationController?.dismiss(animated: true, completion: nil)
+        })
+        
+
         })
     }
     
-    func alertUseroginError(){
-        let alert = UIAlertController(title: "Hopa!", message: "Please complete all information to register a new account",
+    func alertUseroginError(message: String = "Please complete all information to log in"){
+        guard let pass = passwordField.text, pass.isEmpty || pass.count >= 6 else {
+            let alert = UIAlertController(title: "Hopa!", message: "The password must have at least 6 characters",
+                                         preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "Dismiss", style: .cancel, handler: nil))
+            
+            present(alert, animated: true)
+            return
+        }
+        
+        let alert = UIAlertController(title: "Hopa!", message: message,
                                       preferredStyle: .alert)
         
         alert.addAction(UIAlertAction(title: "Dismiss", style: .cancel, handler: nil))
@@ -218,6 +244,12 @@ class RegisterViewController: UIViewController {
     @objc private func didTapRegister() {
         let vc = RegisterViewController()
         vc.title = "Create Account"
+        navigationController?.pushViewController(vc, animated: true)
+    }
+
+    @objc private func didTapLogIn() {
+        let vc = LoginViewController()
+        vc.title = "Log in to your Account"
         navigationController?.pushViewController(vc, animated: true)
     }
 
