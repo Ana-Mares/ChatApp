@@ -20,8 +20,11 @@ class RegisterViewController: UIViewController {
         imageView.image = UIImage(systemName: "person")
         imageView.tintColor = .orange
         imageView.contentMode = .scaleAspectFit
+        imageView.layer.masksToBounds = true
+        imageView.layer.borderWidth = 2
+        imageView.layer.borderColor = UIColor.orange.cgColor
         
-            return imageView
+        return imageView
     }()
     
     private let firstNameField: UITextField = {
@@ -147,7 +150,7 @@ class RegisterViewController: UIViewController {
     }
     
     @objc private func didTapChangeProfilePic() {
-        //print ( "Change pic called")
+        presentPhotoActionSheet()
     }
     
     override func viewDidLayoutSubviews() {  //pozitionarea elementelor pe pagina
@@ -157,6 +160,7 @@ class RegisterViewController: UIViewController {
         let size = scrollView.width/4
         imageView.frame = CGRect( x: (scrollView.width-size)/2, //centers the logo
                                   y: 20, width: size, height: size)
+        imageView.layer.cornerRadius = imageView.width/2.0  //poza devine cerc, nu patrat
         
         firstNameField.frame = CGRect( x: 30, y: imageView.bottom+10,
                                    width: scrollView.width-60, height: 52)
@@ -210,11 +214,19 @@ class RegisterViewController: UIViewController {
 
 }
 
+
+
 extension RegisterViewController: UITextFieldDelegate {
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {   //ce se intampla pt 'Return' (enter) apasat
         
-        if textField == emailField {
+        if textField == firstNameField {
+            lastNameField.becomeFirstResponder()
+        }
+        else if textField == lastNameField {
+            emailField.becomeFirstResponder()
+        }
+        else if textField == emailField {
             passwordField.becomeFirstResponder()
         }
         else if textField == passwordField {
@@ -222,5 +234,59 @@ extension RegisterViewController: UITextFieldDelegate {
         }
         
         return true
+    }
+}
+
+
+extension RegisterViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {  //preluarea imaginii din camera/ galerie
+    
+    func presentPhotoActionSheet () { //action sheet - meniul
+        let actionSheet = UIAlertController(title: "Profile picture",
+                                            message: "How would you like to select a picture for your profile?",
+                                            preferredStyle: .actionSheet)
+        
+        actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        actionSheet.addAction(UIAlertAction(title: "Take photo", style: .default,
+                                            handler: { [weak self] _ in
+                                                self?.presentCamera()
+        }))
+        actionSheet.addAction(UIAlertAction(title: "Choose photo", style: .default,
+                                            handler: { [weak self] _ in
+                                                self?.presentPhotoPicker()
+        }))
+        
+        present(actionSheet, animated: true)
+    }
+    
+    func presentCamera() {
+        let vc = UIImagePickerController()
+        vc.sourceType = .camera
+        vc.delegate = self
+        vc.allowsEditing = true  //cropped square
+        
+        present (vc, animated: true)
+    }
+    
+    func presentPhotoPicker () {
+        let vc = UIImagePickerController()
+        vc.sourceType = .photoLibrary
+        vc.delegate = self
+        vc.allowsEditing = true  //cropped square cutout - alegerea unui patrat din imagine
+        
+        present (vc, animated: true)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        picker.dismiss(animated: true, completion: nil)
+        
+        guard let selectedImage = info[UIImagePickerController.InfoKey.editedImage] as? UIImage else {
+            return
+        }
+        
+        self.imageView.image = selectedImage
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true, completion: nil)
     }
 }
