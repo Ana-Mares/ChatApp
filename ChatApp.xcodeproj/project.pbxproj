@@ -22,6 +22,7 @@
 		76A66F4728169FAB00712ED5 /* VideoPlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76A66F4628169FAB00712ED5 /* VideoPlayerViewController.swift */; };
 		76A66F4928169FD200712ED5 /* NewConversationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76A66F4828169FD200712ED5 /* NewConversationViewController.swift */; };
 		76A66F4B28169FF100712ED5 /* ProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76A66F4A28169FF100712ED5 /* ProfileViewController.swift */; };
+		76A66F4E2816AACB00712ED5 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76A66F4D2816AACB00712ED5 /* Extensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -61,6 +62,7 @@
 		76A66F4628169FAB00712ED5 /* VideoPlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayerViewController.swift; sourceTree = "<group>"; };
 		76A66F4828169FD200712ED5 /* NewConversationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewConversationViewController.swift; sourceTree = "<group>"; };
 		76A66F4A28169FF100712ED5 /* ProfileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewController.swift; sourceTree = "<group>"; };
+		76A66F4D2816AACB00712ED5 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -142,8 +144,7 @@
 			isa = PBXGroup;
 			children = (
 				76A66F0E281698C000712ED5 /* ConversationsViewController.swift */,
-				76A66F4028169F6700712ED5 /* LoginViewController.swift */,
-				76A66F4228169F8000712ED5 /* RegisterViewController.swift */,
+				76A66F4C2816A4BD00712ED5 /* Login */,
 				76A66F4428169FA000712ED5 /* PhotoViewerViewController.swift */,
 				76A66F4628169FAB00712ED5 /* VideoPlayerViewController.swift */,
 				76A66F4828169FD200712ED5 /* NewConversationViewController.swift */,
@@ -180,6 +181,7 @@
 			children = (
 				76A66F0C281698C000712ED5 /* SceneDelegate.swift */,
 				76A66F0A281698C000712ED5 /* AppDelegate.swift */,
+				76A66F4D2816AACB00712ED5 /* Extensions.swift */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -191,6 +193,15 @@
 				76A66F10281698C000712ED5 /* Main.storyboard */,
 			);
 			name = Storyboards;
+			sourceTree = "<group>";
+		};
+		76A66F4C2816A4BD00712ED5 /* Login */ = {
+			isa = PBXGroup;
+			children = (
+				76A66F4028169F6700712ED5 /* LoginViewController.swift */,
+				76A66F4228169F8000712ED5 /* RegisterViewController.swift */,
+			);
+			path = Login;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -329,6 +340,7 @@
 				76A66F4928169FD200712ED5 /* NewConversationViewController.swift in Sources */,
 				76A66F0F281698C000712ED5 /* ConversationsViewController.swift in Sources */,
 				76A66F4728169FAB00712ED5 /* VideoPlayerViewController.swift in Sources */,
+				76A66F4E2816AACB00712ED5 /* Extensions.swift in Sources */,
 				76A66F0B281698C000712ED5 /* AppDelegate.swift in Sources */,
 				76A66F4B28169FF100712ED5 /* ProfileViewController.swift in Sources */,
 				76A66F0D281698C000712ED5 /* SceneDelegate.swift in Sources */,
@@ -507,15 +519,17 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = G8H8Q8RRYL;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ChatApp/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.5;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -525,6 +539,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = AnaMares353.ChatApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -536,15 +551,17 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = G8H8Q8RRYL;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ChatApp/Info.plist;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.5;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -554,6 +571,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = AnaMares353.ChatApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
